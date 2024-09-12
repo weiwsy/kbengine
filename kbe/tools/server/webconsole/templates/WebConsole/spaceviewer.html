@@ -71,17 +71,39 @@ function show_space()
 	        text: 'Space Viewer'
 	    },
 		dataZoom: [
-        {
-            show: true,
-            realtime: true,
-            start: 0,
-            end: 100,
-        },
+        // {
+        //     show: true,
+        //     realtime: true,
+        //     start: 0,
+        //     end: 100,
+        // },
         {
             type: 'inside',
             realtime: true,
             start: 0,
             end: 100,
+			// 滚轮是否触发缩放
+			//  zoomOnMouseWheel: false,
+			// 鼠标滚轮触发滚动
+			// moveOnMouseMove: true,
+			// moveOnMouseWheel: true,
+			xAxisIndex: [0],
+			// yAxisIndex: [0],
+        },
+        {
+            type: 'slider',
+            realtime: true,
+            start: 0,
+            end: 100,
+			yAxisIndex: [0],
+			fiterMode: 'empty',
+        },
+        {
+            type: 'slider',
+            realtime: true,
+            start: 0,
+            end: 100,
+			fiterMode: 'empty',
         }
     ],
 
@@ -110,6 +132,14 @@ function show_space()
 	        label: {
 	            emphasis: {
 	                show: true,
+					focus: 'series',
+	                formatter: function (param) {
+	                    return param.data[3] + ' H:' + param.data[5];
+	                },
+	                position: 'top'
+	            },
+				normal: {
+	                show: true,
 	                formatter: function (param) {
 	                    return param.data[3];
 	                },
@@ -134,12 +164,22 @@ function show_space()
     	obj_cell = JSON.parse(evt.data);
     	console.log(obj_cell);
     	for( i in obj_cell["spaceEntity"]){
-    		point_arr = [obj_cell["spaceEntity"][i]["position_X"],obj_cell["spaceEntity"][i]["position_Z"],40000000,i,obj_cell["spaceEntity"][i]["pEntity"]];
+    		point_arr = [obj_cell["spaceEntity"][i]["position_X"],obj_cell["spaceEntity"][i]["position_Z"],40000000,i,obj_cell["spaceEntity"][i]["pEntity"],obj_cell["spaceEntity"][i]["position_Y"]];
+			let finded = false;
     		for (var j in cell_data )
     			if (cell_data[j][3] == i) {
-    				cell_data.splice(j,1);
+    				// cell_data.splice(j,1);
+					// 采用更新数组元素，否则前台显示的点变动动画会乱
+					if (obj_cell["spaceEntity"][i]["position_X"] != obj_cell["spaceEntity"][i]["position_Z"] != 0) {
+						cell_data[j][0] = point_arr[0];
+						cell_data[j][1] = point_arr[1];
+						cell_data[j][5] = point_arr[5];
+					}
+					finded = true;
     				break;
     			}
+			if (finded) 
+				continue;
     		if (obj_cell["spaceEntity"][i]["position_X"] != obj_cell["spaceEntity"][i]["position_Z"] != 0)
     			cell_data.push(point_arr);
     }; 
