@@ -33,7 +33,6 @@ function connect_to()
     socket.onopen = function(evt) {}; 
     socket.onclose = function(evt) {}; 
     socket.onmessage = function(evt) { 
-     	console.log(evt.data);
      	obj_data = JSON.parse(evt.data);
      	for(var i in obj_data["cellapp"]){
      		{% for comp in kbeComps %}
@@ -133,10 +132,11 @@ function show_space()
 	            emphasis: {
 	                show: true,
 					focus: 'series',
+					//focus: true,
 	                formatter: function (param) {
 	                    return param.data[3] + ' H:' + param.data[5];
 	                },
-	                position: 'top'
+	                position: 'bottom'
 	            },
 				normal: {
 	                show: true,
@@ -149,6 +149,9 @@ function show_space()
 	    }]
 	}
 	myChart.setOption(option);	
+	myChart.on('click', function(event) {
+		console.log(event.data);
+	});
 	timeTicket = setInterval(function () {
     //实时更新重写数据
     myChart.setOption({
@@ -160,9 +163,7 @@ function show_space()
 }; 
     cell_socket.onclose = function(evt) {}; 
     cell_socket.onmessage = function(evt) {
-    	console.log(evt.data);
     	obj_cell = JSON.parse(evt.data);
-    	console.log(obj_cell);
     	for( i in obj_cell["spaceEntity"]){
     		point_arr = [obj_cell["spaceEntity"][i]["position_X"],obj_cell["spaceEntity"][i]["position_Z"],40000000,i,obj_cell["spaceEntity"][i]["pEntity"],obj_cell["spaceEntity"][i]["position_Y"]];
 			let finded = false;
